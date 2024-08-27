@@ -7,12 +7,12 @@ Rails.application.configure do
 
   # Cron jobs
   config.good_job.cron = {
-    check_avito_shedules: {
-      cron: "30 8-23 * * *",
+    main_import_export: {
+      cron: "0 8 29 2 *",
       class: "Projects::Project001::MainJob",
       set: { priority: 10 },
       #args: [42, "life"],
-      #kwargs: { user_id: ENV.fetch("USER_ID") { 1 }.to_i },
+      kwargs: { country: :turkish, limit: 5 },
       description: "Update Turkish games"
     }
   }
