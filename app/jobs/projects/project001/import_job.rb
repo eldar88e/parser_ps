@@ -5,6 +5,7 @@ class Projects::Project001::ImportJob < ApplicationJob
   GROUP_PRICE     = 1
   GROUP_OLD_PRICE = 2
   CURRENCY        = 'RUB'
+  IBLOCK_ID       = 11  # turkish game id
   PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502]
 
   def perform(**args)
@@ -129,7 +130,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     search = data['pagetitle'].upcase
     search += "\n#{text.upcase}" if text.present?
 
-    { TIMESTAMP_X: time, MODIFIED_BY: USER_ID, DATE_CREATE: time, CREATED_BY: USER_ID, IBLOCK_ID: 11,
+    { TIMESTAMP_X: time, MODIFIED_BY: USER_ID, DATE_CREATE: time, CREATED_BY: USER_ID, IBLOCK_ID: IBLOCK_ID,
       IBLOCK_SECTION_ID: 57, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: 500, NAME: data['pagetitle'],
       DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1, IN_SECTIONS: 'Y',
       XML_ID: data['product']['janr'], CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
