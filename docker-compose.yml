@@ -44,11 +44,11 @@ services:
 
   redis:
     image: redis:latest
-    container_name: redis-ps
+    container_name: redis-parser
     command: redis-server
     restart: unless-stopped
     networks:
-      - web-net
+      - parser-net
     volumes:
       - redis:/data
 
