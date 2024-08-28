@@ -44,6 +44,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   def update_facets(facets, existing_facets, selected=nil)
     ids         = []
     section_ids = select_block_section(@element[:IBLOCK_SECTION_ID])
+    binding.pry
     section_ids.each do |i|
       section_id = i.zero? ? 0 : @element[:IBLOCK_SECTION_ID]
       facets.each do |facet|
