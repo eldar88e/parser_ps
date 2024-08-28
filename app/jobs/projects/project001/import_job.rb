@@ -9,10 +9,10 @@ class Projects::Project001::ImportJob < ApplicationJob
   PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502]
 
   def perform(**args)
-    run_id    = args[:run_id] || Project001::Run.last_id # TODO Добавить Run для каждой страны
+    run_id    = args[:run_id]
     limit     = args[:limit]
     offset    = args[:offset]
-    country   = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    country   = args[:country]
     all_games = OpenPs::Content.content_with_products(limit, offset)
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
