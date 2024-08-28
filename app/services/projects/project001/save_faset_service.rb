@@ -10,7 +10,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
 
   def save
     facets          = make_facets
-    existing_facets = @element.b_iblock_11_indexes
+    existing_facets = @element.send("b_iblock_#{@element[:IBLOCK_ID]}_indexes".to_sym)
     return update_all_facets(facets, existing_facets) if existing_facets.present?
 
     save_new_facets(facets, existing_facets)
@@ -95,6 +95,8 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def load_index_val(value)
-    Project001::BIblock11IndexVal.find_or_create_by(VALUE: value)[:ID]
+    class_name = "Project001::BIblock#{@element[:IBLOCK_ID]}IndexVal"
+    klass      = Object.const_get(class_name)
+    klass.find_or_create_by(VALUE: value)[:ID]
   end
 end

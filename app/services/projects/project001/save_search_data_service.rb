@@ -9,13 +9,11 @@ class Projects::Project001::SaveSearchDataService < Parser::ParserBaseService
   end
 
   def save
-    @element.b_search_content.update(@data) && return if @element.b_search_content.present?
+    return if @element.b_search_content.present? # @element.b_search_content.update(@data) &&
 
     ActiveRecord::Base.transaction do
       @element.build_b_search_content(@data).save!
       search_item = @element.b_search_content
-      #add_search_data = make_url(search_item)
-      #search_item.update add_search_data
       search_item.build_b_search_content_text(
         SEARCHABLE_CONTENT: @element[:SEARCHABLE_CONTENT],
         SEARCH_CONTENT_MD5: Digest::MD5.hexdigest(@element[:SEARCHABLE_CONTENT])
@@ -38,21 +36,17 @@ class Projects::Project001::SaveSearchDataService < Parser::ParserBaseService
 
   private
 
-  def make_url(search)
-    { URL: "=ID=#{search[:ID]}&EXTERNAL_ID=#{@element[:XML_ID]}&IBLOCK_SECTION_ID=57&IBLOCK_TYPE_ID=#{search[:PARAM1]}&IBLOCK_ID=11&IBLOCK_CODE=#{search[:PARAM1]}&IBLOCK_EXTERNAL_ID=#{search[:PARAM1]}_s1&CODE=#{@element[:CODE]}" }
-  end
-
   def make_main_search_data
     catalog = 'aspro_lite_catalog'
     {
       DATE_CHANGE: Time.current,
       MODULE_ID: 'iblock',
-      URL: "=ID=#{@element[:ID]}&EXTERNAL_ID=#{@element[:XML_ID]}&IBLOCK_SECTION_ID=57&IBLOCK_TYPE_ID=#{catalog}&IBLOCK_ID=11&IBLOCK_CODE=#{catalog}&IBLOCK_EXTERNAL_ID=#{catalog}_s1&CODE=#{@element[:CODE]}",
+      URL: "=ID=#{@element[:ID]}&EXTERNAL_ID=#{@element[:XML_ID]}&IBLOCK_SECTION_ID=57&IBLOCK_TYPE_ID=#{catalog}&IBLOCK_ID=#{@element[:IBLOCK_ID]}&IBLOCK_CODE=#{catalog}&IBLOCK_EXTERNAL_ID=#{catalog}_s1&CODE=#{@element[:CODE]}",
       TITLE: @element[:NAME],
       BODY: @element[:DETAIL_TEXT] || '',
       TAGS: '',
       PARAM1: catalog,
-      PARAM2: 11,
+      PARAM2: @element[:IBLOCK_ID],
       DATE_FROM: Time.current
     }
   end
