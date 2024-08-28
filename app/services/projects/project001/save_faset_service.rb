@@ -42,8 +42,9 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def update_facets(facets, existing_facets, selected=nil)
-    ids = []
-    [0, 1].each do |i|
+    ids         = []
+    section_ids = select_block_section(@element[:IBLOCK_SECTION_ID])
+    section_ids.each do |i|
       section_id = i.zero? ? 0 : @element[:IBLOCK_SECTION_ID]
       facets.each do |facet|
         facet[:VALUE_NUM] ||= 0
@@ -56,6 +57,17 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
     end
 
     ids
+  end
+
+  def select_block_section(id)
+    section_ids = [0] # по умолчанию секции начинаются с 0
+
+    while id.present?
+      id = Project001::BIblockSection.where(ID: id).pluck(:IBLOCK_SECTION_ID).first
+      section_ids << id.present? ? id : 1 # если нет вложений у секций то по умолчанию должно быть 1
+    end
+
+    section_ids
   end
 
   def make_facets
