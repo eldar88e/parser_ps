@@ -13,10 +13,11 @@ class Projects::Project001::MainJob < ApplicationJob
     mod_offset = offset ? offset - 1 : nil
     Projects::Project001::FillAdditionJob.perform_now(run_id: run_id, country: country, limit: limit, offset: mod_offset)
     FtpService.clear_cache
+
+    # TODO Добавить снятие с публикации отсут. в импорте игр
+
     msg = 'Парсер удачно завершил свою работу!'
     msg << " Обработано #{limit} игр." if limit
     TelegramService.call(msg)
-    # TODO Добавить снятие с публикации отсут. в импорте игр
-    # TODO Добавить уведомление о кол-ве проделаной работы
   end
 end

@@ -15,20 +15,20 @@ class Projects::Project001::ImportJob < ApplicationJob
     country = args[:country]
     iblock_section_id = { turkish: 57, ukraine: 184 }[country]
     module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
-    binding.pry
     all_games         = module_name::Content.content_with_products(limit, offset)
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
-      existing_item = Project001::Addition.find_by(sony_id: game['product']['janr']) # janr is sony_id
+      existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
       if existing_item
         existing_item.update!(touched_run_id: run_id) && next if game['product']['md5_hash'] == existing_item[:md5_hash]
 
         element = existing_item.b_iblock_element
-        Rails.log.error('There is no entry for the element in the database') && next unless element
+        msg = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
+        Rails.log.error(msg) && TelegramService.call(msg) && next unless element
 
         #
         #data = generate_main_data(game)
@@ -53,12 +53,11 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
       else
-        data                = generate_main_data(game, iblock_section_id)
+        data                = generate_main_data(game, iblock_section_id, country)
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, run_id, country)
         data[:other_params] = other_params
-        binding.pry
-        #Project001::BIblockElement.save_product(data)
+        Project001::BIblockElement.save_product(data)
       end
     end
 
@@ -125,7 +124,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     end
   end
 
-  def generate_main_data(data, iblock_section_id)
+  def generate_main_data(data, iblock_section_id, country)
     time   = Time.current
     text   = data['content'] || ''
     search = data['pagetitle'].upcase
@@ -134,7 +133,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     { TIMESTAMP_X: time, MODIFIED_BY: USER_ID, DATE_CREATE: time, CREATED_BY: USER_ID, IBLOCK_ID: IBLOCK_ID,
       IBLOCK_SECTION_ID: iblock_section_id, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: 500,
       NAME: data['pagetitle'], DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1,
-      IN_SECTIONS: 'Y', XML_ID: data['product']['janr'], CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
+      IN_SECTIONS: 'Y', XML_ID: "#{country}_#{data['product']['janr']}", CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
       PREVIEW_TEXT_TYPE: 'html', TMP_ID: 0
     }
   end

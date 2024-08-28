@@ -1,12 +1,13 @@
 class Project001::Addition < Project001::StoreBase
   self.table_name = 'additions'
 
-  validates :sony_id, presence: true, uniqueness: true
+  validates :sony_id, presence: true, uniqueness: { scope: :country }
   validates :data_source_url, presence: true
   validates :md5_hash, presence: true, uniqueness: true
 
   belongs_to :b_iblock_element, class_name: 'Project001::BIblockElement', primary_key: :ID
-  belongs_to :run, class_name: 'Project001::Run'
+  belongs_to :run_turkish, class_name: 'Project001::RunTurkish', foreign_key: :run_id
+  belongs_to :run_ukraine, class_name: 'Project001::RunUkraine', foreign_key: :run_id
 
   enum country: [:turkish, :ukraine, :hindi]
 
