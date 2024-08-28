@@ -1,5 +1,5 @@
-class Project001::Run < Project001::StoreBase
-  self.table_name = 'runs'
+class Project001::RunUkraine < Project001::StoreBase
+  self.table_name = 'runs_ukraine'
 
   has_many :additions, class_name: 'Project001::Addition'
 

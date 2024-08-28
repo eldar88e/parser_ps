@@ -2,10 +2,12 @@ class Projects::Project001::MainJob < ApplicationJob
   queue_as :default
 
   def perform(**args)
-    run_id  = Project001::Run.last_id # TODO Добавить Run для каждой страны
-    offset  = args[:offset]
-    limit   = args[:limit]
-    country = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    offset     = args[:offset]
+    limit      = args[:limit]
+    country    = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    class_name = "Project001::Run#{country.to_s.capitalize}"
+    klass      = Object.const_get(class_name)
+    run_id     = klass.last_id
     Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
     Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
     mod_offset = offset ? offset - 1 : nil

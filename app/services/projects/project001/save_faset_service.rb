@@ -88,7 +88,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def form_id(id)
-    item = @properties[id]&.first
+    item  = @properties[id]&.first
     value = item[:VALUE] if item
     value = 'Неизвестный' if id == 501 && item.nil?
     load_index_val(value)

@@ -41,7 +41,7 @@ class Projects::Project001::SaveSearchDataService < Parser::ParserBaseService
     {
       DATE_CHANGE: Time.current,
       MODULE_ID: 'iblock',
-      URL: "=ID=#{@element[:ID]}&EXTERNAL_ID=#{@element[:XML_ID]}&IBLOCK_SECTION_ID=57&IBLOCK_TYPE_ID=#{catalog}&IBLOCK_ID=#{@element[:IBLOCK_ID]}&IBLOCK_CODE=#{catalog}&IBLOCK_EXTERNAL_ID=#{catalog}_s1&CODE=#{@element[:CODE]}",
+      URL: "=ID=#{@element[:ID]}&EXTERNAL_ID=#{@element[:XML_ID]}&IBLOCK_SECTION_ID=#{@element[:IBLOCK_SECTION_ID]}&IBLOCK_TYPE_ID=#{catalog}&IBLOCK_ID=#{@element[:IBLOCK_ID]}&IBLOCK_CODE=#{catalog}&IBLOCK_EXTERNAL_ID=#{catalog}_s1&CODE=#{@element[:CODE]}",
       TITLE: @element[:NAME],
       BODY: @element[:DETAIL_TEXT] || '',
       TAGS: '',

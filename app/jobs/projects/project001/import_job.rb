@@ -1,18 +1,19 @@
 class Projects::Project001::ImportJob < ApplicationJob
   queue_as :default
 
-  USER_ID         = 2
+  USER_ID         = 2 # user for parsing
   GROUP_PRICE     = 1
   GROUP_OLD_PRICE = 2
   CURRENCY        = 'RUB'
-  IBLOCK_ID       = 11  # turkish game id
+  IBLOCK_ID       = 11  # catalog id
   PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502]
 
   def perform(**args)
-    run_id    = args[:run_id]
-    limit     = args[:limit]
-    offset    = args[:offset]
-    country   = args[:country]
+    run_id  = args[:run_id]
+    limit   = args[:limit]
+    offset  = args[:offset]
+    country = args[:country]
+    iblock_section_id = { turkish: 57, ukraine: 184 }[country]
     all_games = OpenPs::Content.content_with_products(limit, offset)
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
@@ -50,7 +51,7 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
       else
-        data                = generate_main_data(game)
+        data                = generate_main_data(game, iblock_section_id)
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, run_id, country)
         data[:other_params] = other_params
@@ -121,16 +122,16 @@ class Projects::Project001::ImportJob < ApplicationJob
     end
   end
 
-  def generate_main_data(data)
+  def generate_main_data(data, iblock_section_id)
     time   = Time.current
     text   = data['content'] || ''
     search = data['pagetitle'].upcase
     search += "\n#{text.upcase}" if text.present?
 
     { TIMESTAMP_X: time, MODIFIED_BY: USER_ID, DATE_CREATE: time, CREATED_BY: USER_ID, IBLOCK_ID: IBLOCK_ID,
-      IBLOCK_SECTION_ID: 57, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: 500, NAME: data['pagetitle'],
-      DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1, IN_SECTIONS: 'Y',
-      XML_ID: data['product']['janr'], CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
+      IBLOCK_SECTION_ID: iblock_section_id, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: 500,
+      NAME: data['pagetitle'], DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1,
+      IN_SECTIONS: 'Y', XML_ID: data['product']['janr'], CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
       PREVIEW_TEXT_TYPE: 'html', TMP_ID: 0
     }
   end
