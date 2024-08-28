@@ -73,12 +73,13 @@ class Project001::BIblockElement < Project001::StoreBase
     platform   = other_params[0][:VALUE]
     genre      = other_params.select { |i| i[:IBLOCK_PROPERTY_ID] == 230 }.map { |i| i[:VALUE] }.join(', ')
 
-    [*23..26].each do |id|
-      element.b_iblock_element_iprops.build({ IPROP_ID: id, VALUE: element[:NAME] }.merge(start_data)).save!
+    [25, 168].each do |id|
+      value = id == 168 ? "Купить #{element[:NAME]} | 45 Store" : element[:NAME]
+      element.b_iblock_element_iprops.build({ IPROP_ID: id, VALUE: value }.merge(start_data)).save!
     end
 
-    [152, 153].each do |id|
-      val = id == 152 ? make_keywords(element[:NAME], platform, genre) : make_description(element[:NAME], platform)
+    [157, 158].each_with_index do |id, idx|
+      val = idx == 0 ? make_description(element[:NAME], platform) : make_keywords(element[:NAME], platform, genre)
       element.b_iblock_element_iprops.build({ IPROP_ID: id, VALUE: val }.merge(start_data)).save!
     end
   end

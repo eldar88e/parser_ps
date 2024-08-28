@@ -39,6 +39,7 @@ class TelegramService
         Rails.logger.error e.message
       end
     end
+
     nil
   end
 
