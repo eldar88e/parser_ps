@@ -86,13 +86,10 @@ class Projects::Project001::ImportJob < ApplicationJob
       { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'], VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 231, VALUE: gen_lang_info(game['product']), VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 104, VALUE: game['product']['type_game'] || 'Игра', VALUE_NUM: 0 },
-      #{ IBLOCK_PROPERTY_ID: 88, VALUE: 25, VALUE_ENUM: 25 },
-      { IBLOCK_PROPERTY_ID: 76, VALUE: 19, VALUE_ENUM: 19 },
       { IBLOCK_PROPERTY_ID: 72, VALUE: price, VALUE_ENUM: price, VALUE_NUM: price },
       { IBLOCK_PROPERTY_ID: 73, VALUE: old_price, VALUE_ENUM: old_price, VALUE_NUM: old_price },
-      { IBLOCK_PROPERTY_ID: 501, VALUE: publisher, VALUE_NUM: 0 }
-      # { IBLOCK_PROPERTY_ID: 78, VALUE: '[]', VALUE_NUM: 0 },
-      # { IBLOCK_PROPERTY_ID: 79, VALUE: '[]', VALUE_NUM: 0 }
+      { IBLOCK_PROPERTY_ID: 501, VALUE: publisher, VALUE_NUM: 0 },
+      { IBLOCK_PROPERTY_ID: 76, VALUE: 19, VALUE_ENUM: 19 }
     ]
 
     genres = game['product']['genre'].present? ? game['product']['genre'] : 'Неизвестный'

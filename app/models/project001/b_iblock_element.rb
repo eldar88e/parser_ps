@@ -56,7 +56,7 @@ class Project001::BIblockElement < Project001::StoreBase
         { IBLOCK_PROPERTY_ID: 129, VALUE: b_blog_post[:ID], VALUE_NUM: b_blog_post[:ID] }
       ).save!
 
-      save_seo(element, other_params)
+      #save_seo(element, other_params)
 
       element.build_b_catalog_measure_ratio(IS_DEFAULT: 'Y').save!
 
