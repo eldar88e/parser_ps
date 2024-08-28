@@ -64,7 +64,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
 
     while id.present?
       id = Project001::BIblockSection.where(ID: id).pluck(:IBLOCK_SECTION_ID).first
-      section_ids << id.present? ? id : 1 # если нет вложений у секций то по умолчанию должно быть 1
+      section_ids << (id.present? ? id : 1) # если нет вложений у секций то по умолчанию должно быть 1
     end
 
     section_ids
