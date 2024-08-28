@@ -21,6 +21,7 @@ gem 'dotenv'
 gem 'mysql2'
 gem 'net-ftp'
 gem 'mini_magick'
+gem 'telegram-bot-ruby'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
