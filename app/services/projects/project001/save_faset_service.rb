@@ -45,11 +45,11 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
     ids         = []
     section_ids = select_block_section(@element[:IBLOCK_SECTION_ID])
     binding.pry
-    section_ids.each do |i|
-      section_id = i.zero? ? 0 : @element[:IBLOCK_SECTION_ID]
+    section_ids.each do |section_id|
+      i_s = @element[:IBLOCK_SECTION_ID] != section_id ? 0 : 1
       facets.each do |facet|
         facet[:VALUE_NUM] ||= 0
-        data           = { FACET_ID: facet[:FACET_ID], INCLUDE_SUBSECTIONS: i }
+        data           = { FACET_ID: facet[:FACET_ID], INCLUDE_SUBSECTIONS: i_s }
         data[:VALUE]   = facet[:VALUE] if selected
         existing_facet = existing_facets.find_or_initialize_by(data)
         existing_facet.update!(facet.merge({ SECTION_ID: section_id }))
@@ -61,11 +61,11 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def select_block_section(id)
-    section_ids = [0] # по умолчанию секции начинаются с 0
+    section_ids = [0, id]
 
     while id.present?
       id = Project001::BIblockSection.where(ID: id).pluck(:IBLOCK_SECTION_ID).first
-      section_ids << (id.present? ? id : 1) # если нет вложений у секций то по умолчанию должно быть 1
+      section_ids << id if id.present? # если нет вложений у секций то по умолчанию должно быть 1
     end
 
     section_ids
