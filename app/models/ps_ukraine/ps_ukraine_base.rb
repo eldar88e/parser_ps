@@ -1,4 +1,4 @@
-class OpenPs::PsUkraineBase < ApplicationRecord
+class PsUkraine::PsUkraineBase < ApplicationRecord
   establish_connection(adapter: 'mysql2',
                        host: ENV.fetch('PS_UKRAINE_HOST'),
                        database: ENV.fetch('PS_UKRAINE_BD'),

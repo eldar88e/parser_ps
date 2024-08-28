@@ -14,7 +14,9 @@ class Projects::Project001::ImportJob < ApplicationJob
     offset  = args[:offset]
     country = args[:country]
     iblock_section_id = { turkish: 57, ukraine: 184 }[country]
-    all_games = OpenPs::Content.content_with_products(limit, offset)
+    module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
+    binding.pry
+    all_games         = module_name::Content.content_with_products(limit, offset)
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)
@@ -55,7 +57,8 @@ class Projects::Project001::ImportJob < ApplicationJob
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, run_id, country)
         data[:other_params] = other_params
-        Project001::BIblockElement.save_product(data)
+        binding.pry
+        #Project001::BIblockElement.save_product(data)
       end
     end
 
