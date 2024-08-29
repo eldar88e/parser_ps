@@ -38,13 +38,10 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         ###
         data = generate_main_data(game, iblock_section_id, country)
-        element.update!(XML_ID: data[:XML_ID])
+        element.update!(XML_ID: data[:XML_ID]) # TODO убрать
         # ###
 
-        if md5_hash == existing_item[:md5_hash]
-          Rails.logger.error 'Одинаковый'
-          next
-        end
+        next if md5_hash == existing_item[:md5_hash]
 
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
