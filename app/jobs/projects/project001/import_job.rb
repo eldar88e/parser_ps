@@ -37,7 +37,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         existing_item.update!(touched_run_id: run_id)
 
         ###
-        data = generate_main_data(game, iblock_section_id, country)
+        data = generate_main_data(game, section_id, country)
         element.update!(XML_ID: data[:XML_ID]) # TODO убрать
         # ###
 
