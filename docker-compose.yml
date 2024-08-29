@@ -27,7 +27,7 @@ services:
     volumes:
       - gems:/usr/local/bundle
       - .:/app
-      - ./logs/terminal_logs:/var/log/.ash_history
+      - ./log/terminal_logs:/var/log/.ash_history
     networks:
       - parser-net
     restart: unless-stopped
