@@ -42,7 +42,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         # ###
 
         if md5_hash == existing_item[:md5_hash]
-          puts 'Одинаковый'
+          Rails.logger.error 'Одинаковый'
           next
         end
 
@@ -68,7 +68,7 @@ class Projects::Project001::ImportJob < ApplicationJob
           Rails.logger.error(msg) && TelegramService.call(msg) && next
         end
 
-        existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
+        existing_item.update!(md5_hash: md5_hash, touched_run_id: run_id)
         updated += 1
       else
         data                = generate_main_data(game, iblock_section_id, country)
