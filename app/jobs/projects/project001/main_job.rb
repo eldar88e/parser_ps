@@ -11,6 +11,7 @@ class Projects::Project001::MainJob < ApplicationJob
     run_class      = Object.const_get(class_name)
     run_id         = run_class.last_id
     saved, updated = Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
+    binding.pry
     uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
     mod_offset = offset ? offset - 1 : nil
     Projects::Project001::FillAdditionJob.perform_now(run_id: run_id, country: country, limit: limit, offset: mod_offset)
