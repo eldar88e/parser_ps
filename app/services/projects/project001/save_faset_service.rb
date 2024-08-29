@@ -26,7 +26,6 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
 
   def update_all_facets(facets, existing_facets)
     selected_facets, remaining_facets = facets.partition { |facet| [148, 460].include?(facet[:FACET_ID]) }
-
     remaining_facets_ids = update_facets(remaining_facets, existing_facets)
     selected_facets_ids  = update_facets(selected_facets, existing_facets, true)
 
@@ -48,10 +47,11 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
       i_s = @element[:IBLOCK_SECTION_ID] != section_id ? 0 : 1
       facets.each do |facet|
         facet[:VALUE_NUM] ||= 0
-        data           = { FACET_ID: facet[:FACET_ID], INCLUDE_SUBSECTIONS: i_s }
-        data[:VALUE]   = facet[:VALUE] if selected
-        existing_facet = existing_facets.find_or_initialize_by(data)
-        existing_facet.update(facet.merge({ SECTION_ID: section_id }))
+        facet[:INCLUDE_SUBSECTIONS] = i_s
+        search_init_data            = { FACET_ID: facet[:FACET_ID], SECTION_ID: section_id }
+        search_init_data[:VALUE]    = facet[:VALUE] if selected
+        existing_facet              = existing_facets.find_or_initialize_by(search_init_data)
+        existing_facet.update(facet)
         ids << existing_facet.id
       rescue => e
         Rails.logger.error(e.message)
@@ -97,7 +97,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
     result << { FACET_ID: 208, VALUE: game_type_id, VALUE_NUM: 0 }
 
     offers_ids = [15, 16, 17, 18]
-    offers_ids.each { |id| result << { FACET_ID: 148, VALUE: id } if @properties[74]&.any? { |i| i.VALUE == id } }
+    offers_ids.each { |id| result << { FACET_ID: 148, VALUE: id } if @properties[74]&.any? { |i| i.VALUE.to_i == id } }
 
     result
   end
