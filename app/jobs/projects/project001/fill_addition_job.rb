@@ -1,3 +1,5 @@
+# Projects::Project001::FillAdditionJob.perform_now(run_id: 1, country: :ukraine, limit: 21)
+
 class Projects::Project001::FillAdditionJob < ApplicationJob
   queue_as :default
 
