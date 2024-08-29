@@ -4,13 +4,14 @@ class Projects::Project001::MainJob < ApplicationJob
   queue_as :default
 
   def perform(**args)
-    offset         = args[:offset]
-    limit          = args[:limit]
-    country        = args[:country] || 'turkish' # TODO убрать || 'turkish'
-    class_name     = "Project001::Run#{country.to_s.capitalize}"
-    run_class      = Object.const_get(class_name)
-    run_id         = run_class.last_id
-    saved, updated, restored = Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
+    offset     = args[:offset]
+    limit      = args[:limit]
+    country    = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    class_name = "Project001::Run#{country.to_s.capitalize}"
+    run_class  = Object.const_get(class_name)
+    run_id     = run_class.last_id
+    saved, updated, restored =
+      Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
     uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
     Projects::Project001::FillAdditionJob.perform_now(run_id: run_id, country: country)
 

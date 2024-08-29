@@ -1,8 +1,7 @@
 class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   def initialize(element)
-    @element     = element
-    @properties  = element.b_iblock_element_properties.group_by(&:IBLOCK_PROPERTY_ID)
-    @section_ids = fetch_section_ids
+    @element    = element
+    @properties = element.b_iblock_element_properties.group_by(&:IBLOCK_PROPERTY_ID)
   end
 
   def self.call(element)
@@ -50,6 +49,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
 
   def update_facets(facets, existing_facets, selected=nil)
     ids = []
+    @section_ids ||= fetch_section_ids
     @section_ids.each do |section_id|
       i_s = @element[:IBLOCK_SECTION_ID] != section_id ? 0 : 1
       facets.each do |facet|
