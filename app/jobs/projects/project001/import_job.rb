@@ -15,8 +15,8 @@ class Projects::Project001::ImportJob < ApplicationJob
     limit   = args[:limit]
     offset  = args[:offset]
     country = args[:country]
-    iblock_section_id = { turkish: 57, ukraine: 184 }[country]
-    module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
+    iblock_section_id = { turkish: 57, ukraine: 184 }[country] # TODO Добавить индию
+    module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country] # TODO Добавить индию
     all_games         = module_name::Content.content_with_products(limit, offset)
     saved = updated = restored = 0
     all_games.each do |game|
@@ -24,9 +24,9 @@ class Projects::Project001::ImportJob < ApplicationJob
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
-      str_for_hash  = other_params.map { |i| i[:VALUE] }.join + game['product']['data_source_url']
+      str_for_hash  = generate_md5_hash(other_params, game['alias'])
       md5_hash      = Digest::MD5.hexdigest(str_for_hash)
-      existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
+      existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url'])
 
       if existing_item
         element = existing_item.b_iblock_element
@@ -82,6 +82,10 @@ class Projects::Project001::ImportJob < ApplicationJob
   end
 
   private
+
+  def generate_md5_hash(params, url_alias)
+    params.sort_by { |i| i[:IBLOCK_PROPERTY_ID] }.map { |i| i[:VALUE] }.join + url_alias
+  end
 
   def update_properties(properties, existing_properties, selected=nil)
     properties.map do |item|

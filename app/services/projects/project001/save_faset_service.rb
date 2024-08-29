@@ -10,22 +10,29 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def save
-    facets          = make_facets
     existing_facets = @element.send("b_iblock_#{@element[:IBLOCK_ID]}_indexes".to_sym)
-    return update_all_facets(facets, existing_facets) if existing_facets.present?
+    if existing_facets.present?
+      exist_price = existing_facets.find_by(FACET_ID: 3)&.VALUE_NUM.to_i
+      new_price   = @properties[72]&.first&.VALUE.to_i
+      return if exist_price == new_price
 
-    save_new_facets(facets, existing_facets)
+      update_all_facets(existing_facets)
+    else
+      save_new_facets(existing_facets)
+    end
   end
 
   private
 
-  def save_new_facets(facets, existing_facets)
+  def save_new_facets(existing_facets)
+    facets = make_facets
     update_facets(facets, existing_facets, true) # true т.к. создание новых записей
 
     nil
   end
 
-  def update_all_facets(facets, existing_facets)
+  def update_all_facets(existing_facets)
+    facets = make_facets
     selected_facets, remaining_facets = facets.partition { |facet| [148, 460].include?(facet[:FACET_ID]) }
     remaining_facets_ids = update_facets(remaining_facets, existing_facets)
     selected_facets_ids  = update_facets(selected_facets, existing_facets, true)
@@ -42,7 +49,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def update_facets(facets, existing_facets, selected=nil)
-    ids         = []
+    ids = []
     @section_ids.each do |section_id|
       i_s = @element[:IBLOCK_SECTION_ID] != section_id ? 0 : 1
       facets.each do |facet|
