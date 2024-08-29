@@ -25,7 +25,12 @@ class Projects::Project001::ImportJob < ApplicationJob
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
       if existing_item
-        existing_item.update!(touched_run_id: run_id) && next if game['product']['md5_hash'] == existing_item[:md5_hash]
+        if game['product']['md5_hash'] == existing_item[:md5_hash]
+          existing_item.update!(touched_run_id: run_id)
+          element = existing_item.b_iblock_element
+          element.update!(ACTIVE: 'Y') if element[:ACTIVE] != 'Y'
+          next
+        end
 
         element = existing_item.b_iblock_element
         msg = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
