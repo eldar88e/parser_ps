@@ -22,7 +22,8 @@ class Projects::Project001::ImportJob < ApplicationJob
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
-      md5_hash      = Digest::MD5.hexdigest(other_params)
+      str_for_hash  = other_params.map { |i| i[:VALUE] }.join
+      md5_hash      = Digest::MD5.hexdigest(str_for_hash)
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
       if existing_item
@@ -49,6 +50,9 @@ class Projects::Project001::ImportJob < ApplicationJob
         existing_prices = element.b_catalog_prices
         prices.each do |price|
           existing_prices.find_or_initialize_by(CATALOG_GROUP_ID: price[:CATALOG_GROUP_ID]).update!(price)
+        end
+        if prices.size < existing_prices.size
+          existing_prices.where.not(CATALOG_GROUP_ID: prices.first[:CATALOG_GROUP_ID]).delete_all
         end
 
         existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
