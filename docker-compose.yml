@@ -22,9 +22,12 @@ services:
     depends_on:
       - pg
       - redis
+    environment:
+      - HISTFILE=/var/log/.ash_history
     volumes:
       - gems:/usr/local/bundle
       - .:/app
+      - ./logs/terminal_logs:/var/log/.ash_history
     networks:
       - parser-net
     restart: unless-stopped
