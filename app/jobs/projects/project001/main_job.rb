@@ -20,7 +20,7 @@ class Projects::Project001::MainJob < ApplicationJob
 
     FtpService.clear_cache
 
-    run_class.finish
+    #run_class.finish
 
     msg = 'Парсер удачно завершил свою работу!'
     msg << "\nСохранено #{saved} новых игр." unless saved.zero?

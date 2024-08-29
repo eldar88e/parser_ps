@@ -62,6 +62,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
         data[:other_params] = other_params
+        data[:category]     = "games_#{country.to_s}/"
         Project001::BIblockElement.save_product(data)
         saved += 1
       end

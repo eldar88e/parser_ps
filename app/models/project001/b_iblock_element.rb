@@ -34,6 +34,7 @@ class Project001::BIblockElement < Project001::StoreBase
     prices       = data.delete(:prices)
     addition     = data.delete(:addition)
     other_params = data.delete(:other_params)
+    category     = data.delete(:category)
     self.transaction do
       element = create(data)
       element.create_addition(addition)
@@ -41,10 +42,6 @@ class Project001::BIblockElement < Project001::StoreBase
       element.build_b_iblock_section_element(IBLOCK_SECTION_ID: data[:IBLOCK_SECTION_ID]).save!
       other_params.each { |params| element.b_iblock_element_properties.build(params).save! }
       element.build_b_catalog_product(form_product_data).save!
-
-      ###
-      category = 'games_turkish/' # TODO need to be dynamic categories game, country, platform
-      #####
 
       b_blog_post = Project001::BBlogPost.create!(
         TITLE: data[:NAME], BLOG_ID: BLOG_ID, AUTHOR_ID: data[:CREATED_BY], ENABLE_TRACKBACK: ENABLE_TRACKBACK,
@@ -62,8 +59,6 @@ class Project001::BIblockElement < Project001::StoreBase
 
       nil
     end
-  rescue => e
-    puts e.message
     binding.pry
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.error e.message
