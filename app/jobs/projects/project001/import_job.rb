@@ -55,7 +55,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       else
         data                = generate_main_data(game, iblock_section_id, country)
         data[:prices]       = prices
-        data[:addition]     = generate_addition_data(game, run_id, country)
+        data[:addition]     = generate_addition_data(game, other_params, run_id, country)
         data[:other_params] = other_params
         Project001::BIblockElement.save_product(data)
         saved += 1
@@ -153,8 +153,8 @@ class Projects::Project001::ImportJob < ApplicationJob
     result
   end
 
-  def generate_addition_data(data, run_id, country)
+  def generate_addition_data(data, other_params, run_id, country)
     { sony_id: data['product']['janr'], data_source_url: data['product']['data_source_url'], country: country,
-      md5_hash: data['product']['md5_hash'], run_id: run_id, touched_run_id: run_id } # TODO сделать свой md5_hash
+      md5_hash: Digest::MD5.hexdigest(other_params), run_id: run_id, touched_run_id: run_id } # old version data['product']['md5_hash']
   end
 end
