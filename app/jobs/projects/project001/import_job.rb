@@ -35,7 +35,16 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
         existing_item.update!(touched_run_id: run_id)
-        next if md5_hash == existing_item[:md5_hash]
+
+        ###
+        data = generate_main_data(game, iblock_section_id, country)
+        element.update!(XML_ID: data[:XML_ID])
+        # ###
+
+        if md5_hash == existing_item[:md5_hash]
+          puts 'Одинаковый'
+          next
+        end
 
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
@@ -58,11 +67,6 @@ class Projects::Project001::ImportJob < ApplicationJob
           msg = "Удалена старая цена #{game['product']['janr']}"
           Rails.logger.error(msg) && TelegramService.call(msg) && next
         end
-
-        ###
-        data = generate_main_data(game, iblock_section_id, country)
-        element.update!(XML_ID: data[:XML_ID])
-        # ###
 
         existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
         updated += 1
