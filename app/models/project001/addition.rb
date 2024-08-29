@@ -24,4 +24,8 @@ class Project001::Addition < Project001::StoreBase
       .offset(offset)
       .includes(b_iblock_element: [:b_iblock_element_properties, :b_iblock_11_indexes])
   end
+
+  scope :not_touched, ->(run_id, country) do
+    where(touched_run_id: run_id, country: country.to_sym).includes(:b_iblock_element)
+  end
 end
