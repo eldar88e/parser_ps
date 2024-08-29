@@ -6,6 +6,7 @@ default: &default
 
 development:
   <<: *default
+  host: <%= ENV.fetch("DB_HOST") { 'localhost' } %>
   database: rails_parser_development
 
 test:
