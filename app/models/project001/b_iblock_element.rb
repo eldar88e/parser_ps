@@ -14,7 +14,7 @@ class Project001::BIblockElement < Project001::StoreBase
 
   validates :NAME, presence: true
   validates :CODE, presence: true
-  validates :XML_ID, presence: true
+  validates :XML_ID, presence: true, uniqueness: true
 
   self.table_name  = 'b_iblock_element'
   self.primary_key = 'ID'

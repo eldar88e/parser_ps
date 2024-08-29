@@ -55,7 +55,14 @@ class Projects::Project001::ImportJob < ApplicationJob
         end
         if prices.size < existing_prices.size
           existing_prices.where.not(CATALOG_GROUP_ID: prices.first[:CATALOG_GROUP_ID]).delete_all
+          msg = "Удалена старая цена #{game['product']['janr']}"
+          Rails.logger.error(msg) && TelegramService.call(msg) && next
         end
+
+        ###
+        data = generate_main_data(game, iblock_section_id, country)
+        element.update!(XML_ID: data[:XML_ID])
+        # ###
 
         existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
         updated += 1
