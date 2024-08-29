@@ -59,7 +59,6 @@ class Project001::BIblockElement < Project001::StoreBase
 
       nil
     end
-    binding.pry
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.error e.message
   end
