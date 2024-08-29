@@ -34,13 +34,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
 
         element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
-        existing_item.update!(touched_run_id: run_id)
-
-        ###
-        data = generate_main_data(game, section_id, country)
-        element.update!(XML_ID: data[:XML_ID]) # TODO убрать
-        # ###
-
+        existing_item.update(touched_run_id: run_id)
         next if md5_hash == existing_item[:md5_hash]
 
         existing_properties = element.b_iblock_element_properties
@@ -61,12 +55,10 @@ class Projects::Project001::ImportJob < ApplicationJob
         end
         if prices.size < existing_prices.size
           existing_prices.where.not(CATALOG_GROUP_ID: prices.first[:CATALOG_GROUP_ID]).delete_all
-          msg = "Удалена старая цена #{game['product']['janr']}"
-          Rails.logger.error(msg) && TelegramService.call(msg) && next
+          next
         end
 
-        existing_item.update!(md5_hash: md5_hash, touched_run_id: run_id)
-        updated += 1
+        existing_item.update(md5_hash: md5_hash) && updated += 1
       else
         data                = generate_main_data(game, section_id, country)
         data[:prices]       = prices

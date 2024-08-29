@@ -53,8 +53,6 @@ class Project001::BIblockElement < Project001::StoreBase
         { IBLOCK_PROPERTY_ID: 129, VALUE: b_blog_post[:ID], VALUE_NUM: b_blog_post[:ID] }
       ).save!
 
-      # save_seo(element, other_params) TODO убрать и вызов и метод
-
       element.build_b_catalog_measure_ratio(IS_DEFAULT: 'Y').save!
 
       nil
@@ -64,22 +62,6 @@ class Project001::BIblockElement < Project001::StoreBase
   end
 
   private
-
-  def self.save_seo(element, other_params)
-    start_data = { IBLOCK_ID: element[:IBLOCK_ID], SECTION_ID: element[:IBLOCK_SECTION_ID] }
-    platform   = other_params[0][:VALUE]
-    genre      = other_params.select { |i| i[:IBLOCK_PROPERTY_ID] == 230 }.map { |i| i[:VALUE] }.join(', ')
-
-    [25, 168].each do |id|
-      value = id == 168 ? "Купить #{element[:NAME]} | 45 Store" : element[:NAME]
-      element.b_iblock_element_iprops.build({ IPROP_ID: id, VALUE: value }.merge(start_data)).save!
-    end
-
-    [157, 158].each_with_index do |id, idx|
-      val = idx == 0 ? make_description(element[:NAME], platform) : make_keywords(element[:NAME], platform, genre)
-      element.b_iblock_element_iprops.build({ IPROP_ID: id, VALUE: val }.merge(start_data)).save!
-    end
-  end
 
   def self.make_description(name, platform)
     "Купите #{name} для PlayStation в 45store.ru. Эксклюзив для #{platform}. Акции и скидки на игры. Оформите заказ прямо сейчас!"
