@@ -1,3 +1,5 @@
+# Projects::Project001::ImportJob.perform_now(run_id: 12, country: :ukraine, offset: 400, limit: 11)
+
 class Projects::Project001::ImportJob < ApplicationJob
   queue_as :default
 

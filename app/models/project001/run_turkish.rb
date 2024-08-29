@@ -1,7 +1,7 @@
 class Project001::RunTurkish < Project001::StoreBase
   self.table_name = 'runs_turkish'
 
-  has_many :additions, class_name: 'Project001::Addition'
+  # has_many :additions, class_name: 'Project001::Addition'
 
   def self.last_id
     last = last_run
