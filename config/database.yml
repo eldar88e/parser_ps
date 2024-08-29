@@ -8,6 +8,8 @@ development:
   <<: *default
   host: <%= ENV.fetch("DB_HOST") { 'localhost' } %>
   database: rails_parser_development
+  username: <%= ENV.fetch("DB_USER") { 'admin' } %>
+  password: <%= ENV.fetch("DB_PASSWORD") { 'admin' } %>
 
 test:
   <<: *default
