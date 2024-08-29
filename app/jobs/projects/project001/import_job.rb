@@ -25,21 +25,14 @@ class Projects::Project001::ImportJob < ApplicationJob
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
       if existing_item
-        if game['product']['md5_hash'] == existing_item[:md5_hash]
-          existing_item.update!(touched_run_id: run_id)
-          element = existing_item.b_iblock_element
-          element.update!(ACTIVE: 'Y') if element[:ACTIVE] != 'Y'
-          next
-        end
-
         element = existing_item.b_iblock_element
-        msg = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
-        Rails.log.error(msg) && TelegramService.call(msg) && next unless element
+        msg     = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
+        Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
 
-        #
-        #data = generate_main_data(game)
-        #element.update!(data)
-        #
+        element.update!(ACTIVE: 'Y') if element[:ACTIVE] != 'Y'
+        existing_item.update!(touched_run_id: run_id)
+        next if game['product']['md5_hash'] == existing_item[:md5_hash]
+
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
           [74, 230].include?(property[:IBLOCK_PROPERTY_ID])
@@ -57,13 +50,15 @@ class Projects::Project001::ImportJob < ApplicationJob
           existing_prices.find_or_initialize_by(CATALOG_GROUP_ID: price[:CATALOG_GROUP_ID]).update!(price)
         end
 
-        existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id) && updated += 1
+        existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
+        updated += 1
       else
         data                = generate_main_data(game, iblock_section_id, country)
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, run_id, country)
         data[:other_params] = other_params
-        Project001::BIblockElement.save_product(data) && saved += 1
+        Project001::BIblockElement.save_product(data)
+        saved += 1
       end
     end
 
