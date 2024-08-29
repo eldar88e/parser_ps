@@ -24,7 +24,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
-      str_for_hash  = other_params.map { |i| i[:VALUE] }.join
+      str_for_hash  = other_params.map { |i| i[:VALUE] }.join + game['product']['data_source_url']
       md5_hash      = Digest::MD5.hexdigest(str_for_hash)
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
