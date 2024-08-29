@@ -16,7 +16,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     iblock_section_id = { turkish: 57, ukraine: 184 }[country]
     module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
     all_games         = module_name::Content.content_with_products(limit, offset)
-    saved,updated     = 0
+    saved = updated = 0
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)

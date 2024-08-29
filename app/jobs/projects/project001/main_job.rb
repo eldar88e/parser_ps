@@ -24,8 +24,8 @@ class Projects::Project001::MainJob < ApplicationJob
     run_class.finish
 
     msg = 'Парсер удачно завершил свою работу!'
-    msg << "\nСохранено #{saved} новых игр." if saved
-    msg << "\nОбновлено #{updated} старых игр." if updated
+    msg << "\nСохранено #{saved} новых игр." unless saved.zero?
+    msg << "\nОбновлено #{updated} старых игр." unless updated.zero?
     msg << "\nЗагружено #{uploaded_image} картинок." unless uploaded_image.zero?
     msg << "\nДеактивировано #{deactivated} игр." unless deactivated.zero?
     TelegramService.call(msg)
