@@ -4,26 +4,30 @@ class Projects::Project001::MainJob < ApplicationJob
   queue_as :default
 
   def perform(**args)
-    offset     = args[:offset]
-    limit      = args[:limit]
-    country    = args[:country] || 'turkish' # TODO убрать || 'turkish'
-    class_name = "Project001::Run#{country.to_s.capitalize}"
-    run_class  = Object.const_get(class_name)
-    run_id     = run_class.last_id
-    Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
-    Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
+    offset         = args[:offset]
+    limit          = args[:limit]
+    country        = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    class_name     = "Project001::Run#{country.to_s.capitalize}"
+    run_class      = Object.const_get(class_name)
+    run_id         = run_class.last_id
+    saved, updated = Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
+    uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
     mod_offset = offset ? offset - 1 : nil
     Projects::Project001::FillAdditionJob.perform_now(run_id: run_id, country: country, limit: limit, offset: mod_offset)
 
     not_touched_additions = Project001::Addition.not_touched(run_id, country)
-    not_touched_additions.each { |i| i.b_iblock_element.update(ACTIVE: 'N') }
+    deactivated = 0
+    not_touched_additions.each { |i| deactivated += 1; i.b_iblock_element.update(ACTIVE: 'N') }
 
     FtpService.clear_cache
 
     run_class.finish
 
     msg = 'Парсер удачно завершил свою работу!'
-    msg << " Обработано #{limit} игр." if limit
+    msg << "\nСохранено #{saved} новых игр." if saved
+    msg << "\nОбновлено #{updated} старых игр." if updated
+    msg << "\nЗагружено #{uploaded_image} картинок." unless uploaded_image.zero?
+    msg << "\nДеактивировано #{deactivated} игр." unless deactivated.zero?
     TelegramService.call(msg)
   rescue => e
     TelegramService.call("#{class_name}. Error: #{e.message}")

@@ -6,6 +6,7 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
   def perform(**args)
     run_id            = args[:run_id]
     country           = args[:country]
+    uploaded_image    = 0
     games_without_img = Project001::Addition.without_img(run_id, country)
     games_without_img.each do |game|
       next if game[:sony_id] == 'EP1018-PPSA07571_00-MKONEPREMIUM0000' # TODO убрать
@@ -25,9 +26,10 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
 
       row_data = make_row_data(game, preview_file, detail_file)
       row_data.each { |data| save_img_info_to_tables(data, game) }
+      uploaded_image += 1
     end
 
-    nil
+    uploaded_image
   end
 
   private

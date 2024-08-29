@@ -16,6 +16,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     iblock_section_id = { turkish: 57, ukraine: 184 }[country]
     module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
     all_games         = module_name::Content.content_with_products(limit, offset)
+    saved,updated     = 0
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)
@@ -51,17 +52,17 @@ class Projects::Project001::ImportJob < ApplicationJob
           existing_prices.find_or_initialize_by(CATALOG_GROUP_ID: price[:CATALOG_GROUP_ID]).update!(price)
         end
 
-        existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id)
+        existing_item.update!(md5_hash: game['product']['md5_hash'], touched_run_id: run_id) && updated += 1
       else
         data                = generate_main_data(game, iblock_section_id, country)
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, run_id, country)
         data[:other_params] = other_params
-        Project001::BIblockElement.save_product(data)
+        Project001::BIblockElement.save_product(data) && saved += 1
       end
     end
 
-    nil
+    [saved, updated]
   end
 
   private
