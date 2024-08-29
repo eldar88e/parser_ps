@@ -44,7 +44,6 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   def update_facets(facets, existing_facets, selected=nil)
     ids         = []
     section_ids = select_block_section(@element[:IBLOCK_SECTION_ID])
-    binding.pry
     section_ids.each do |section_id|
       i_s = @element[:IBLOCK_SECTION_ID] != section_id ? 0 : 1
       facets.each do |facet|
@@ -52,8 +51,11 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
         data           = { FACET_ID: facet[:FACET_ID], INCLUDE_SUBSECTIONS: i_s }
         data[:VALUE]   = facet[:VALUE] if selected
         existing_facet = existing_facets.find_or_initialize_by(data)
-        existing_facet.update!(facet.merge({ SECTION_ID: section_id }))
+        existing_facet.update(facet.merge({ SECTION_ID: section_id }))
         ids << existing_facet.id
+      rescue => e
+        Rails.logger.error(e.message)
+        next
       end
     end
 
@@ -78,7 +80,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
     platform_id  = form_id(229)
     lang_id      = form_id(231)
     publisher_id = form_id(501)
-    result       = [{ FACET_ID: 1, VALUE: 0 }, { FACET_ID: 3, VALUE: 1, VALUE_NUM: price },
+    result       = [{ FACET_ID: 1, VALUE: 0 }, { FACET_ID: 3, VALUE: 6, VALUE_NUM: price },
                     { FACET_ID: 458, VALUE: platform_id }, { FACET_ID: 462, VALUE: lang_id },
                     { FACET_ID: 1002, VALUE: publisher_id }]
 

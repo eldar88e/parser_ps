@@ -1,3 +1,5 @@
+# Projects::Project001::MainJob.perform_now(country: :ukraine, limit: 21)
+
 class Projects::Project001::MainJob < ApplicationJob
   queue_as :default
 
