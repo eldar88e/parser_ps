@@ -18,10 +18,8 @@ class Project001::Addition < Project001::StoreBase
              b_iblock_element: { DETAIL_PICTURE: nil })
   }
 
-  scope :touched, ->(run_id, country, limit, offset) do
+  scope :touched, ->(run_id, country) do
     where(touched_run_id: run_id, country: country.to_sym)
-      .limit(limit)
-      .offset(offset)
       .includes(b_iblock_element: [:b_iblock_element_properties, :b_iblock_11_indexes])
   end
 

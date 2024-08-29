@@ -6,7 +6,7 @@ class Projects::Project001::FillAdditionJob < ApplicationJob
   def perform(**args)
     country   = args[:country]
     run_id    = args[:run_id]
-    additions = Project001::Addition.touched(run_id, country, args[:limit], args[:offset])
+    additions = Project001::Addition.touched(run_id, country)
     return unless additions.present?
 
     additions.each do |addition|
