@@ -16,7 +16,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     iblock_section_id = { turkish: 57, ukraine: 184 }[country]
     module_name       = { turkish: OpenPs, ukraine: PsUkraine }[country]
     all_games         = module_name::Content.content_with_products(limit, offset)
-    saved = updated = 0
+    saved = updated = restored = 0
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)
@@ -29,7 +29,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         msg     = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
         Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
 
-        element.update!(ACTIVE: 'Y') if element[:ACTIVE] != 'Y'
+        element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
         existing_item.update!(touched_run_id: run_id)
         next if game['product']['md5_hash'] == existing_item[:md5_hash]
 
@@ -62,7 +62,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       end
     end
 
-    [saved, updated]
+    [saved, updated, restored]
   end
 
   private
