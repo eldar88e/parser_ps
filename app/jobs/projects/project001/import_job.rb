@@ -22,6 +22,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
+      md5_hash      = Digest::MD5.hexdigest(other_params)
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url']) # janr is sony_id
 
       if existing_item
@@ -31,7 +32,7 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
         existing_item.update!(touched_run_id: run_id)
-        next if game['product']['md5_hash'] == existing_item[:md5_hash]
+        next if md5_hash == existing_item[:md5_hash]
 
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
@@ -55,7 +56,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       else
         data                = generate_main_data(game, iblock_section_id, country)
         data[:prices]       = prices
-        data[:addition]     = generate_addition_data(game, other_params, run_id, country)
+        data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
         data[:other_params] = other_params
         Project001::BIblockElement.save_product(data)
         saved += 1
@@ -153,8 +154,8 @@ class Projects::Project001::ImportJob < ApplicationJob
     result
   end
 
-  def generate_addition_data(data, other_params, run_id, country)
+  def generate_addition_data(data, md5_hash, run_id, country)
     { sony_id: data['product']['janr'], data_source_url: data['product']['data_source_url'], country: country,
-      md5_hash: Digest::MD5.hexdigest(other_params), run_id: run_id, touched_run_id: run_id } # old version data['product']['md5_hash']
+      md5_hash: md5_hash, run_id: run_id, touched_run_id: run_id } # old version data['product']['md5_hash']
   end
 end
