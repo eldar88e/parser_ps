@@ -56,12 +56,15 @@ class Project001::BIblockElement < Project001::StoreBase
         { IBLOCK_PROPERTY_ID: 129, VALUE: b_blog_post[:ID], VALUE_NUM: b_blog_post[:ID] }
       ).save!
 
-      #save_seo(element, other_params)
+      # save_seo(element, other_params) TODO убрать и вызов и метод
 
       element.build_b_catalog_measure_ratio(IS_DEFAULT: 'Y').save!
 
       nil
     end
+  rescue => e
+    puts e.message
+    binding.pry
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.error e.message
   end
