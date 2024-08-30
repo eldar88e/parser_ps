@@ -23,7 +23,7 @@ class Projects::Project001::MainJob < ApplicationJob
 
     run_class.finish
 
-    msg = 'Парсер удачно завершил свою работу!'
+    msg = "Парсер для #{country} удачно завершил свою работу!"
     msg << "\nСохранено #{saved} новых игр." unless saved.zero?
     msg << "\nОбновлено #{updated} старых игр." unless updated.zero?
     msg << "\nВосстановлено #{restored} старых игр." unless restored.zero?
