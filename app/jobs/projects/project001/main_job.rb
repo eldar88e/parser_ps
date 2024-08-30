@@ -12,8 +12,8 @@ class Projects::Project001::MainJob < ApplicationJob
     run_id     = run_class.last_id
     saved, updated, restored =
       Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
+    Projects::Project001::FillAdditionJob.perform_later(run_id: run_id, country: country)
     uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
-    Projects::Project001::FillAdditionJob.perform_now(run_id: run_id, country: country)
 
     not_touched_additions = Project001::Addition.not_touched(run_id, country)
     deactivated = 0
