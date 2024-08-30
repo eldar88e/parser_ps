@@ -29,7 +29,8 @@ services:
       - .:/app
       - ./log/terminal_logs:/var/log/.ash_history
     networks:
-      - parser-net
+      parser-net:
+        ipv4_address: 172.29.0.4
     restart: unless-stopped
 
   good_job:
