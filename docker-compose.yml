@@ -66,9 +66,9 @@ services:
     depends_on:
       - parser
     networks:
-      - parser-net
-      - proxy-net
-    ipv4_address: 172.29.0.4
+      parser-net:
+      proxy-net:
+        ipv4_address: 172.29.0.4
     restart: always
 
 volumes:
