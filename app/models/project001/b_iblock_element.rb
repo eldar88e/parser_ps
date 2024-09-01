@@ -56,6 +56,8 @@ class Project001::BIblockElement < Project001::StoreBase
       element.build_b_catalog_measure_ratio(IS_DEFAULT: 'Y').save!
 
       nil
+    rescue => e
+      binding.pry
     end
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.error e.message
@@ -63,11 +65,11 @@ class Project001::BIblockElement < Project001::StoreBase
 
   private
 
-  def self.make_description(name, platform)
+  def self.make_description(name, platform) # TODO удалить
     "Купите #{name} для PlayStation в 45store.ru. Эксклюзив для #{platform}. Акции и скидки на игры. Оформите заказ прямо сейчас!"
   end
 
-  def self.make_keywords(name, platform, genre)
+  def self.make_keywords(name, platform, genre) # TODO удалить
     ["купить #{name}", "#{name} #{platform}", "#{name} на PlayStation", 'эксклюзив PlayStation',
      "игры для #{platform}", "#{genre} #{platform}", 'акции на игры', "скидки на #{name}", '45store'].join(', ')
   end
