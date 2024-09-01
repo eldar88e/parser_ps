@@ -16,8 +16,8 @@ class Projects::Project001::MainJob < ApplicationJob
     uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
 
     not_touched_additions = Project001::Addition.not_touched(run_id, country)
-    deactivated = 0
-    not_touched_additions.each { |i| deactivated += 1; i.b_iblock_element.update(ACTIVE: 'N') }
+    deactivated = not_touched_additions.update_all(ACTIVE: 'N') # 0 TODO убрать комент
+    # not_touched_additions.each { |i| deactivated += 1; i.b_iblock_element.update(ACTIVE: 'N') } TODO узнать что лучше
 
     FtpService.clear_cache
 
@@ -28,7 +28,7 @@ class Projects::Project001::MainJob < ApplicationJob
     msg << "\nОбновлено #{updated} старых игр." unless updated.zero?
     msg << "\nВосстановлено #{restored} старых игр." unless restored.zero?
     msg << "\nЗагружено #{uploaded_image} картинок." unless uploaded_image.zero?
-    msg << "\nДеактивировано #{deactivated} игр." unless deactivated.zero?
+    msg << "\nДеактивировано #{deactivated} игр." # unless deactivated.zero? TODO устранить
     TelegramService.call(msg)
   rescue => e
     TelegramService.call("#{class_name}. Error: #{e.message}")

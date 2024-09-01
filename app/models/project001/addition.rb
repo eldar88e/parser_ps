@@ -24,6 +24,6 @@ class Project001::Addition < Project001::StoreBase
   end
 
   scope :not_touched, ->(run_id, country) do
-    where(country: country.to_sym).where.not(touched_run_id: run_id).includes(:b_iblock_element)
+    includes(:b_iblock_element).where(country: country.to_sym).where.not(touched_run_id: run_id)
   end
 end
