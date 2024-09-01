@@ -30,6 +30,10 @@ class Project001::BIblockElement < Project001::StoreBase
   has_many :b_iblock_11_indexes, class_name: 'Project001::BIblock11Index', foreign_key: :ELEMENT_ID, primary_key: :ID
   has_one :b_search_content, class_name: 'Project001::BSearchContent', foreign_key: :ITEM_ID, primary_key: :ID
 
+  scope :not_touched, ->(run_id, country) do
+    joins(:addition).where(addition: { country: country.to_sym }).where.not(addition: { touched_run_id: run_id })
+  end
+
   def self.save_product(data)
     prices       = data.delete(:prices)
     addition     = data.delete(:addition)
@@ -56,8 +60,6 @@ class Project001::BIblockElement < Project001::StoreBase
       element.build_b_catalog_measure_ratio(IS_DEFAULT: 'Y').save!
 
       nil
-    rescue => e
-      binding.pry
     end
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.error e.message

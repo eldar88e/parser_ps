@@ -15,12 +15,10 @@ class Projects::Project001::MainJob < ApplicationJob
     Projects::Project001::FillAdditionJob.perform_later(run_id: run_id, country: country)
     uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
 
-    not_touched_additions = Project001::Addition.not_touched(run_id, country)
-    deactivated = not_touched_additions.update_all(ACTIVE: 'N') # 0 TODO убрать комент
-    # not_touched_additions.each { |i| deactivated += 1; i.b_iblock_element.update(ACTIVE: 'N') } TODO узнать что лучше
+    not_touched_additions = Project001::BIblockElement.not_touched(run_id, country)
+    deactivated           = not_touched_additions.update_all(ACTIVE: 'N')
 
     FtpService.clear_cache
-
     run_class.finish
 
     msg = "Парсер для #{country} удачно завершил свою работу!"
