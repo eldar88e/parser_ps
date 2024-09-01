@@ -11,7 +11,7 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
     games_without_img.each do |game|
       next if game[:sony_id] == 'EP1018-PPSA07571_00-MKONEPREMIUM0000' # TODO убрать
 
-      detail_file  = download_image(game[:sony_id])
+      detail_file  = download_image(game[:sony_id], country)
       next if detail_file.nil?
 
       preview_file = ImageService.call(image: detail_file, width: MEDIUM_IMAGE_SIZE, height: MEDIUM_IMAGE_SIZE)
@@ -64,8 +64,9 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
     }
   end
 
-  def download_image(id)
-    url      = "https://store.playstation.com/store/api/chihiro/00_09_000/container/TR/tr/99/#{id}/0/image?w=720&h=720"
+  def download_image(id, country)
+    path     = { turkish: 'TR/tr', ukraine: 'UA/ru', india: 'IN/en' }[country]
+    url      = "https://store.playstation.com/store/api/chihiro/00_09_000/container/#{path}/99/#{id}/0/image?w=720&h=720"
     scraper  = Scraper::ScraperBaseService.new
     response = scraper.connect_to(url)
     return if response.status == 404

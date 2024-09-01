@@ -99,7 +99,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     old_price ||= price
     publisher = game['product']['publisher'].present? ? game['product']['publisher'] : 'Неизвестный'
     result = [
-      { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'], VALUE_NUM: 0 },
+      { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'].gsub(/, PS Vita|, PS3/, ''), VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 231, VALUE: gen_lang_info(game['product']), VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 104, VALUE: game['product']['type_game'] || 'Игра', VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 72, VALUE: price, VALUE_ENUM: price, VALUE_NUM: price },
@@ -108,7 +108,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       { IBLOCK_PROPERTY_ID: 76, VALUE: 19, VALUE_ENUM: 19 }
     ]
 
-    genres = game['product']['genre'].present? ? game['product']['genre'] : 'Неизвестный'
+    genres = game['product']['genre'].present? ? game['product']['genre'] : 'Другое'
     genres.split(', ').uniq.each do |genre|
       result << { IBLOCK_PROPERTY_ID: 230, VALUE: genre.strip, VALUE_NUM: 0 }
     end
