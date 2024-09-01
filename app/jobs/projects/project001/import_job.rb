@@ -60,7 +60,14 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         existing_item.update(md5_hash: md5_hash) && updated += 1
       else
-        data                = generate_main_data(game, section_id, country)
+        data             = generate_main_data(game, section_id, country)
+        existing_element = Project001::BIblockElement.find_by(XML_ID: data[:XML_ID])
+        if existing_element
+          msg = "XML_ID #{data[:XML_ID]} is exist in the database!"
+          Rails.logger.error(msg)
+          TelegramService.call(msg)
+          next
+        end
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
         data[:other_params] = other_params
