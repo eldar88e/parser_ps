@@ -1,16 +1,16 @@
 class Projects::Project001::ImageDownloadJob < ApplicationJob
   queue_as :default
+
   BIG_IMAGE_SIZE    = 720
   MEDIUM_IMAGE_SIZE = 430
   MODULE_ID         = 'iblock'
+
   def perform(**args)
     run_id            = args[:run_id]
     country           = args[:country]
     uploaded_image    = 0
     games_without_img = Project001::Addition.without_img(run_id, country)
     games_without_img.each do |game|
-      next if game[:sony_id] == 'EP1018-PPSA07571_00-MKONEPREMIUM0000' # TODO убрать
-
       detail_file  = download_image(game[:sony_id], country)
       next if detail_file.nil?
 
