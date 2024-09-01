@@ -69,9 +69,9 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
     url      = "https://store.playstation.com/store/api/chihiro/00_09_000/container/#{path}/99/#{id}/0/image?w=720&h=720"
     scraper  = Scraper::ScraperBaseService.new
     response = scraper.connect_to(url)
-    return if response.status == 404
+    return if !response.present? || response.status != 200
 
-    response&.body
+    response.body
   rescue => e
     Rails.logger.error e.message
     nil
