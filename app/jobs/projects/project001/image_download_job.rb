@@ -9,9 +9,9 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
     run_id            = args[:run_id]
     country           = args[:country]
     uploaded_image    = 0
-    games_without_img = Project001::Addition.without_img(run_id, country)
+    games_without_img = form_list(run_id, country, args[:all])
     games_without_img.each do |game|
-      detail_file  = download_image(game[:sony_id], country)
+      detail_file = download_image(game[:sony_id], game[:country])
       next if detail_file.nil?
 
       preview_file = ImageService.call(image: detail_file, width: MEDIUM_IMAGE_SIZE, height: MEDIUM_IMAGE_SIZE)
@@ -34,6 +34,19 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
   end
 
   private
+
+  def form_list(run_id, country, all)
+    if all
+      Project001::Addition.includes(:b_iblock_element).where(b_iblock_element: { DETAIL_PICTURE: nil })
+    elsif run_id && country
+      Project001::Addition.without_img(run_id, country)
+    elsif country
+      Project001::Addition.includes(:b_iblock_element)
+                          .where(country: country.to_sym, b_iblock_element: { DETAIL_PICTURE: nil })
+    else
+      []
+    end
+  end
 
   def save_img_info_to_tables(data, game)
     file_data = make_file_data(**data[0])
