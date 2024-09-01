@@ -11,7 +11,7 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
     uploaded_image    = 0
     games_without_img = form_list(run_id, country, args[:all])
     games_without_img.each do |game|
-      detail_file = download_image(game[:sony_id], game[:country])
+      detail_file = download_image(game[:sony_id], game[:country].to_sym)
       next if detail_file.nil?
 
       preview_file = ImageService.call(image: detail_file, width: MEDIUM_IMAGE_SIZE, height: MEDIUM_IMAGE_SIZE)
