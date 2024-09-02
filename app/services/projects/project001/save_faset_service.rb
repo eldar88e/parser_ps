@@ -118,8 +118,7 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
   end
 
   def load_index_val(value)
-    class_name = "Project001::BIblock#{@element[:IBLOCK_ID]}IndexVal"
-    klass      = Object.const_get(class_name)
+    klass = "Project001::BIblock#{@element[:IBLOCK_ID]}IndexVal".constantize
     klass.find_or_create_by(VALUE: value)[:ID]
   end
 end
