@@ -46,8 +46,6 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
       end
 
       detail_file = download_image(game[:sony_id], game[:country].to_sym)
-
-
       if detail_file.nil?
         msg = "Image download failed. Sony id: #{game[:sony_id]}"
         Rails.logger.error msg
@@ -74,8 +72,8 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
       uploaded_image += 1
     end
     msg = ''
-    msg << "Загружено обе #{uploaded_image} картинок.\n" if uploaded_image > 0
-    msg << "Загружено превью #{upld_exist_img} картинок.\n" if upld_exist_img > 0
+    msg << "Загружено #{uploaded_image} картинок.\n" if uploaded_image > 0
+    msg << "Загружено превью из существующей #{upld_exist_img} картинок.\n" if upld_exist_img > 0
     msg << "Указаны существующие #{set_exist_image} картинок.\n" if set_exist_image > 0
     msg << "Ошибка загрузки #{error_download} картинок.\n" if error_download > 0
     TelegramService.call(msg.strip)
