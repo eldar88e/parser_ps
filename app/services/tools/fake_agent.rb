@@ -11,11 +11,7 @@ class Tools::FakeAgent
     include Singleton
 
     def get
-      if @agents.nil?
-        #@agents = UserAgent.where(device_type: 'Desktop User Agents').pluck(:user_agent)
-        #Hamster.close_connection(UserAgent)
-        @agents = YAML.load_file('user-agents.yml')['user_agents']
-      end
+      @agents ||= YAML.load_file('user-agents.yml')['user_agents']
       @agents.sample
     end
   end

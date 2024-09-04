@@ -13,7 +13,7 @@ class Projects::Project001::MainJob < ApplicationJob
     saved, updated, restored =
       Projects::Project001::ImportJob.perform_now(run_id: run_id, country: country, limit: limit, offset: offset)
     Projects::Project001::FillAdditionJob.perform_later(run_id: run_id, country: country)
-    uploaded_image = Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
+    Projects::Project001::ImageDownloadJob.perform_now(run_id: run_id, country: country)
 
     not_touched_additions = Project001::BIblockElement.not_touched(run_id, country)
     deactivated           = not_touched_additions.update_all(ACTIVE: 'N')
@@ -25,7 +25,6 @@ class Projects::Project001::MainJob < ApplicationJob
     msg << "\nСохранено #{saved} новых игр." unless saved.zero?
     msg << "\nОбновлено #{updated} старых игр." unless updated.zero?
     msg << "\nВосстановлено #{restored} старых игр." unless restored.zero?
-    msg << "\nЗагружено #{uploaded_image} картинок." unless uploaded_image.zero?
     msg << "\nДеактивировано #{deactivated} игр." # unless deactivated.zero? TODO устранить
     TelegramService.call(msg)
   rescue => e
