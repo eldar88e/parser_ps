@@ -35,7 +35,7 @@ class Projects::Project001::ImportJob < ApplicationJob
 
         element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
         existing_item.update(touched_run_id: run_id)
-        next if md5_hash == existing_item[:md5_hash] # TODO нужно закоментировать что бы обновились платформы и жанры
+        #next if md5_hash == existing_item[:md5_hash] # TODO нужно закоментировать что бы обновились платформы и жанры
 
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
