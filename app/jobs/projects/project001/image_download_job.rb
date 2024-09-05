@@ -72,6 +72,7 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
       uploaded_image += 1
     end
     msg = ''
+    msg << "#{country.to_s.capitalize}\n" if country
     msg << "Загружено #{uploaded_image} картинок.\n" if uploaded_image > 0
     msg << "Загружено превью из существующей #{upld_exist_img} картинок.\n" if upld_exist_img > 0
     msg << "Указаны существующие #{set_exist_image} картинок.\n" if set_exist_image > 0

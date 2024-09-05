@@ -12,14 +12,14 @@ Rails.application.configure do
       class: "Projects::Project001::MainJob",
       set: { priority: 10 },
       #args: [42, "life"],
-      kwargs: { country: :turkish, limit: 3000 },
+      kwargs: { country: :turkish, limit: 5000 },
       description: "Update Turkish games"
     },
     ukraine_import_export: {
       cron: "30 7 * * *",
       class: "Projects::Project001::MainJob",
       set: { priority: 10 },
-      kwargs: { country: :ukraine, limit: 3000 },
+      kwargs: { country: :ukraine, limit: 5000 },
       description: "Update Ukraine games"
     }
   }
