@@ -28,7 +28,6 @@ class FtpService
     Net::FTP.open(FTP_HOST, FTP_LOGIN, FTP_PASS) { |ftp| upload_temp_file(ftp) }
   rescue => e
     Rails.logger.error e.message
-    # TelegramService.call(@user, "❌ File #{@name} was not sent!\nError: #{e.message}")
     'error'
   end
 
@@ -63,7 +62,6 @@ class FtpService
         ftp.delete(i)
       rescue Net::FTPPermError => e
         begin
-          # TODO Нужно доработать что бы чистился не весь кеш
           ftp.chdir(i)
           delete_files(ftp)
           ftp.chdir("..")

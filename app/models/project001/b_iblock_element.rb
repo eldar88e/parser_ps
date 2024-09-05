@@ -67,15 +67,6 @@ class Project001::BIblockElement < Project001::StoreBase
 
   private
 
-  def self.make_description(name, platform) # TODO удалить
-    "Купите #{name} для PlayStation в 45store.ru. Эксклюзив для #{platform}. Акции и скидки на игры. Оформите заказ прямо сейчас!"
-  end
-
-  def self.make_keywords(name, platform, genre) # TODO удалить
-    ["купить #{name}", "#{name} #{platform}", "#{name} на PlayStation", 'эксклюзив PlayStation',
-     "игры для #{platform}", "#{genre} #{platform}", 'акции на игры', "скидки на #{name}", '45store'].join(', ')
-  end
-
   def self.form_product_data
     { QUANTITY: QUANTITY, TYPE: TYPE, TIMESTAMP_X: Time.current, MEASURE: MEASURE, AVAILABLE: AVAILABLE,
       BUNDLE: BUNDLE, VAT_ID: nil, SUBSCRIBE: SUBSCRIBE, SELECT_BEST_PRICE: SELECT_BEST_PRICE,

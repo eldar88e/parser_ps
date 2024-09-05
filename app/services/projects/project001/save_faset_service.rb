@@ -88,11 +88,11 @@ class Projects::Project001::SaveFasetService < Parser::ParserBaseService
     platform_id  = form_id(229)
     lang_id      = form_id(231)
     publisher_id = form_id(501)
-    result       = [{ FACET_ID: 1, VALUE: 0 }, { FACET_ID: 3, VALUE: 6, VALUE_NUM: price }, # TODO возможно у FACET_ID: 3 value придется динамически получать с какойто таблицы
+    result       = [{ FACET_ID: 1, VALUE: 0 }, { FACET_ID: 3, VALUE: 6, VALUE_NUM: price }, # TODO возможно у FACET_ID: 3,6 value придется динамически получать с какойто таблицы
                     { FACET_ID: 458, VALUE: platform_id }, { FACET_ID: 462, VALUE: lang_id },
                     { FACET_ID: 1002, VALUE: publisher_id }]
 
-    result << { FACET_ID: 5, VALUE: 6, VALUE_NUM: old_price } if old_price # TODO возможно у FACET_ID: 3 value придется динамически получать с какойто таблицы
+    result << { FACET_ID: 5, VALUE: 6, VALUE_NUM: old_price } if old_price # TODO возможно у FACET_ID: 5 value придется динамически получать с какойто таблицы
 
     genres = @properties[230]&.map(&:VALUE) || []
     genres.each do |genre|
