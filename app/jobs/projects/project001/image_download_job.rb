@@ -66,7 +66,7 @@ class Projects::Project001::ImageDownloadJob < ApplicationJob
         next
       end
 
-      sleep rand(0.3..1.9)
+      sleep rand(0.7..2.9)
       row_data = make_row_data(game, preview_file, detail_file)
       row_data.each { |data| save_img_info_to_tables(data, game) }
       uploaded_image += 1

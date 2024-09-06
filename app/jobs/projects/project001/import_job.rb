@@ -24,8 +24,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       old_price     = generate_old_price(game, country)
       prices        = generate_price_data(price, old_price)
       other_params  = generate_other_params(game, price, old_price)
-      str_for_hash  = generate_md5_hash(other_params, game['alias'])
-      md5_hash      = Digest::MD5.hexdigest(str_for_hash)
+      md5_hash      = generate_md5_hash(other_params, game['alias'])
       existing_item = Project001::Addition.find_by(data_source_url: game['product']['data_source_url'])
 
       if existing_item
@@ -83,7 +82,8 @@ class Projects::Project001::ImportJob < ApplicationJob
   private
 
   def generate_md5_hash(params, url_alias)
-    params.sort_by { |i| i[:IBLOCK_PROPERTY_ID] }.map { |i| i[:VALUE] }.join + url_alias
+    str = params.sort_by { |i| i[:IBLOCK_PROPERTY_ID] }.map { |i| i[:VALUE] }.join + url_alias
+    Digest::MD5.hexdigest(str)
   end
 
   def update_properties(properties, existing_properties, selected=nil)

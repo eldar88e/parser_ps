@@ -34,7 +34,8 @@ class Scraper::ScraperBaseService < Tools::Harvester
         exit 0
       end
 
-      proxy   = fetch_proxy if iteration > 0
+      proxy = fetch_proxy if iteration > 0
+      puts proxy if Rails.env.development?
       headers = headers.merge(user_agent: Tools::FakeAgent.new.any) unless headers.include?(:user_agent)
       headers.merge!(cookies) if cookies
 
