@@ -32,10 +32,11 @@ class Projects::Project001::ImportJob < ApplicationJob
         msg     = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
         Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
 
-        element.update!(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
+        element.update(ACTIVE: 'Y', SORT: game['menuindex']) && restored += 1 if element[:ACTIVE] != 'Y'
         existing_item.update(touched_run_id: run_id)
         next if md5_hash == existing_item[:md5_hash]
 
+        element.update(SORT: game['menuindex']) if element[:SORT] != game['menuindex']
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
           [74, 230].include?(property[:IBLOCK_PROPERTY_ID])
@@ -151,10 +152,10 @@ class Projects::Project001::ImportJob < ApplicationJob
     search += "\n#{text.upcase}" if text.present?
 
     { TIMESTAMP_X: time, MODIFIED_BY: USER_ID, DATE_CREATE: time, CREATED_BY: USER_ID, IBLOCK_ID: IBLOCK_ID,
-      IBLOCK_SECTION_ID: section_id, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: 500, NAME: data['pagetitle'],
-      DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1, IN_SECTIONS: 'Y',
-      XML_ID: "#{country}_#{data['product']['janr']}", CODE: data['alias'], TAGS: '', PREVIEW_TEXT: text[0..255],
-      PREVIEW_TEXT_TYPE: 'html', TMP_ID: 0
+      IBLOCK_SECTION_ID: section_id, ACTIVE_FROM: Time.current, ACTIVE_TO: USER_ID, SORT: data['menuindex'],
+      NAME: data['pagetitle'], DETAIL_TEXT: text, DETAIL_TEXT_TYPE: 'html', SEARCHABLE_CONTENT: search, WF_STATUS_ID: 1,
+      IN_SECTIONS: 'Y', XML_ID: "#{country}_#{data['product']['janr']}", CODE: data['alias'], TAGS: '',
+      PREVIEW_TEXT: text[0..255], PREVIEW_TEXT_TYPE: 'html', TMP_ID: 0
     }
   end
 
