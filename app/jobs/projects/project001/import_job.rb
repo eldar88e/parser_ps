@@ -18,7 +18,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     section_id  = { turkish: 57, ukraine: 184 }[country]                     # TODO Добавить индию
     module_name = { turkish: OpenPs, ukraine: PsUkraine }[country]           # TODO Добавить индию
     all_games   = module_name::Content.content_with_products(limit, offset)
-    saved = updated = restored = 0
+    saved = updated = restored = upd_menuidx = 0
     all_games.each do |game|
       price         = PriceCountryService.call(price: game['product']['price_tl'].to_i, country: country)
       old_price     = generate_old_price(game, country)
@@ -32,11 +32,11 @@ class Projects::Project001::ImportJob < ApplicationJob
         msg     = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
         Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
 
-        element.update(ACTIVE: 'Y', SORT: game['menuindex']) && restored += 1 if element[:ACTIVE] != 'Y'
+        element.update(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
+        element.update(SORT: game['menuindex']) && upd_menuidx += 1 if element[:SORT] != game['menuindex']
         existing_item.update(touched_run_id: run_id)
         next if md5_hash == existing_item[:md5_hash]
 
-        element.update(SORT: game['menuindex']) if element[:SORT] != game['menuindex']
         existing_properties = element.b_iblock_element_properties
         selected_properties, remaining_properties = other_params.partition do |property|
           [74, 230].include?(property[:IBLOCK_PROPERTY_ID])
@@ -77,7 +77,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       end
     end
 
-    [saved, updated, restored]
+    [saved, updated, restored, upd_menuidx]
   end
 
   private
