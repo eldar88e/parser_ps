@@ -3,7 +3,7 @@ class OpenPs::Content < OpenPs::OpenPsBase
 
   has_one :product, foreign_key: 'id'   #optional: true
 
-  scope :active_contents, ->(parent) { where(deleted: 0, published: 1, parent: parent) }
+  scope :active_contents, -> (parent) { where(deleted: 0, published: 1, parent: parent) }
 
   PARENT_PS5 = 218
   PARENT_PS4 = 217

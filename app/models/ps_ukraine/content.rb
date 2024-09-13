@@ -3,7 +3,7 @@ class PsUkraine::Content < PsUkraine::PsUkraineBase
 
   has_one :product, foreign_key: 'id'
 
-  scope :active_contents, ->(parent) { where(deleted: 0, published: 1, parent: parent) }
+  scope :active_contents, -> (parent) { where(deleted: 0, published: 1, parent: parent) }
 
   PARENT_PS5 = 21
   PARENT_PS4 = 22
