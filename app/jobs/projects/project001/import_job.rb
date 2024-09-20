@@ -8,7 +8,7 @@ class Projects::Project001::ImportJob < ApplicationJob
   GROUP_OLD_PRICE = 2
   CURRENCY        = 'RUB'
   IBLOCK_ID       = 11  # catalog id
-  PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502]
+  PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502, 505]
 
   def perform(**args)
     run_id      = args[:run_id]
@@ -106,6 +106,7 @@ class Projects::Project001::ImportJob < ApplicationJob
   def generate_other_params(game, price, old_price)
     old_price ||= price
     publisher = game['product']['publisher'].present? ? game['product']['publisher'] : 'Неизвестный'
+
     result = [
       { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'].gsub(/, PS Vita|, PS3/, ''), VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 231, VALUE: gen_lang_info(game['product']), VALUE_NUM: 0 },
@@ -113,7 +114,8 @@ class Projects::Project001::ImportJob < ApplicationJob
       { IBLOCK_PROPERTY_ID: 72, VALUE: price, VALUE_ENUM: price, VALUE_NUM: price },
       { IBLOCK_PROPERTY_ID: 73, VALUE: old_price, VALUE_ENUM: old_price, VALUE_NUM: old_price },
       { IBLOCK_PROPERTY_ID: 501, VALUE: publisher, VALUE_NUM: 0 },
-      { IBLOCK_PROPERTY_ID: 76, VALUE: 19, VALUE_ENUM: 19 }
+      { IBLOCK_PROPERTY_ID: 76, VALUE: 19, VALUE_ENUM: 19 },
+      { IBLOCK_PROPERTY_ID: 505, VALUE: game['product']['made_in'], VALUE_NUM: 0 }
     ]
 
     genres = game['product']['genre'].present? ? game['product']['genre'] : 'Другое'
