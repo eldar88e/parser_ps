@@ -68,10 +68,10 @@ class Projects::Project001::ImportJob < ApplicationJob
         data             = generate_main_data(game, section_id, country)
         existing_element = Project001::BIblockElement.find_by(XML_ID: data[:XML_ID])
         if existing_element
-          msg = "XML_ID #{data[:XML_ID]} is exist in the database!"
-          Rails.logger.error(msg)
           TelegramService.call(msg)
+          binding.pry
           next
+          # existing_element.destroy if existing_element[:ACTIVE] == 'N'
         end
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
@@ -182,6 +182,6 @@ class Projects::Project001::ImportJob < ApplicationJob
 
   def generate_addition_data(data, md5_hash, run_id, country)
     { sony_id: data['product']['janr'], data_source_url: data['product']['data_source_url'], country: country,
-      md5_hash: md5_hash, run_id: run_id, touched_run_id: run_id } # TODO old version data['product']['md5_hash']
+      md5_hash: md5_hash, run_id: run_id, touched_run_id: run_id }
   end
 end

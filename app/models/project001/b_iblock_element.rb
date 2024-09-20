@@ -19,16 +19,17 @@ class Project001::BIblockElement < Project001::StoreBase
   self.table_name  = 'b_iblock_element'
   self.primary_key = 'ID'
 
-  has_one :addition, class_name: 'Project001::Addition', primary_key: :ID
-  has_many :b_catalog_prices, class_name: 'Project001::BCatalogPrice', foreign_key: :PRODUCT_ID, primary_key: :ID
-  has_one :b_iblock_section_element, class_name: 'Project001::BIblockSectionElement', foreign_key: :IBLOCK_ELEMENT_ID, primary_key: :ID
-  has_many :b_iblock_element_properties, class_name: 'Project001::BIblockElementProperty', foreign_key: :IBLOCK_ELEMENT_ID, primary_key: :ID
-  has_one :b_catalog_product, class_name: 'Project001::BCatalogProduct', foreign_key: :ID, primary_key: :ID
+  has_one :addition, class_name: 'Project001::Addition', primary_key: :ID, dependent: :destroy
+  has_many :b_catalog_prices, class_name: 'Project001::BCatalogPrice', foreign_key: :PRODUCT_ID, primary_key: :ID, dependent: :destroy
+  has_one :b_iblock_section_element, class_name: 'Project001::BIblockSectionElement', foreign_key: :IBLOCK_ELEMENT_ID, primary_key: :ID, dependent: :destroy
+  has_many :b_iblock_element_properties, class_name: 'Project001::BIblockElementProperty', foreign_key: :IBLOCK_ELEMENT_ID, primary_key: :ID, dependent: :destroy
+  has_one :b_catalog_product, class_name: 'Project001::BCatalogProduct', foreign_key: :ID, primary_key: :ID, dependent: :destroy
+  has_many :b_iblock_element_iprops, class_name: 'Project001::BIblockElementIprop', foreign_key: :ELEMENT_ID, primary_key: :ID, dependent: :destroy
+  has_one :b_catalog_measure_ratio, class_name: 'Project001::BCatalogMeasureRatio', foreign_key: :PRODUCT_ID, primary_key: :ID, dependent: :destroy
+  has_many :b_iblock_11_indexes, class_name: 'Project001::BIblock11Index', foreign_key: :ELEMENT_ID, primary_key: :ID, dependent: :destroy
+  has_one :b_search_content, class_name: 'Project001::BSearchContent', foreign_key: :ITEM_ID, primary_key: :ID, dependent: :destroy
+
   belongs_to :b_file, class_name: 'Project001::BFile', foreign_key: :DETAIL_PICTURE, primary_key: :ID, optional: true
-  has_many :b_iblock_element_iprops, class_name: 'Project001::BIblockElementIprop', foreign_key: :ELEMENT_ID, primary_key: :ID
-  has_one :b_catalog_measure_ratio, class_name: 'Project001::BCatalogMeasureRatio', foreign_key: :PRODUCT_ID, primary_key: :ID
-  has_many :b_iblock_11_indexes, class_name: 'Project001::BIblock11Index', foreign_key: :ELEMENT_ID, primary_key: :ID
-  has_one :b_search_content, class_name: 'Project001::BSearchContent', foreign_key: :ITEM_ID, primary_key: :ID
 
   scope :not_touched, ->(run_id, country) do
     joins(:addition).where(addition: { country: country.to_sym }).where.not(addition: { touched_run_id: run_id })
