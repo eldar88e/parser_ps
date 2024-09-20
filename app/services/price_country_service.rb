@@ -48,10 +48,6 @@ class PriceCountryService
   end
 
   def make_exchange_rate_india
-    if @price < 8000
-      (@price * 1.5).to_f
-    else
-      (@price * 1.4).to_f
-    end
+    @price < 8000 ? 1.5 : 1.4
   end
 end
