@@ -32,8 +32,8 @@ class Projects::Project001::ImportJob < ApplicationJob
 
       if existing_item
         element = existing_item.b_iblock_element
-        msg     = "There is no entry for the element in the database. sony_id: #{existing_item[:sony_id]}"
-        Rails.log.error(msg) && TelegramService.call(msg) && next unless element # TODO создать новую запись element
+        msg     = "There is no b_iblock_element for additional with sony_id: #{existing_item[:sony_id]}, therefore removed!"
+        Rails.logger.error(msg) && existing_item.destroy && next if element.nil?
 
         element.update(ACTIVE: 'Y') && restored += 1 if element[:ACTIVE] != 'Y'
         element.update(SORT: game['menuindex']) && upd_menuidx += 1 if element[:SORT] != game['menuindex']
@@ -72,11 +72,11 @@ class Projects::Project001::ImportJob < ApplicationJob
           if existing_element[:ACTIVE] == 'N'
             existing_element.destroy
             msg << ' and unpublish, therefore removed!'
-            Rails.log.error(msg)
+            Rails.logger.error(msg)
             TelegramService.call(msg)
           else
             msg << ', was not removed!'
-            Rails.log.error(msg)
+            Rails.logger.error(msg)
             TelegramService.call(msg)
             next
           end
