@@ -16,7 +16,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     offset      = args[:offset]
     country     = args[:country]
     section_id  = { turkish: 57, ukraine: 184, india: 192 }[country]
-    module_name = { turkish: OpenPs, ukraine: PsUkraine, india: OpenPs }[country]
+    module_name = { turkish: OpenPs, ukraine: PsUkraine, india: PsIndia }[country]
     all_games   = module_name::Content.content_with_products(limit, offset)
     saved = updated = restored = upd_menuidx = 0
     all_games.each do |game|
