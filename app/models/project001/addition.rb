@@ -6,10 +6,8 @@ class Project001::Addition < Project001::StoreBase
   validates :md5_hash, presence: true, uniqueness: true
 
   belongs_to :b_iblock_element, class_name: 'Project001::BIblockElement', primary_key: :ID
-  # belongs_to :run_turkish, class_name: 'Project001::RunTurkish', foreign_key: :run_id
-  # belongs_to :run_ukraine, class_name: 'Project001::RunUkraine', foreign_key: :run_id
 
-  enum country: [:turkish, :ukraine, :hindi]
+  enum country: [:turkish, :ukraine, :india]
 
   scope :without_img, ->(run_id, country) {
     includes(:b_iblock_element)

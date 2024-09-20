@@ -6,7 +6,7 @@ class Projects::Project001::MainJob < ApplicationJob
   def perform(**args)
     offset     = args[:offset]
     limit      = args[:limit]
-    country    = args[:country] || 'turkish' # TODO убрать || 'turkish'
+    country    = args[:country]
     class_name = "Project001::Run#{country.to_s.capitalize}"
     run_class  = Object.const_get(class_name)
     run_id     = run_class.last_id
