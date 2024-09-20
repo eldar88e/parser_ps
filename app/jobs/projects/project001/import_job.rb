@@ -9,14 +9,17 @@ class Projects::Project001::ImportJob < ApplicationJob
   CURRENCY        = 'RUB'
   IBLOCK_ID       = 11  # catalog id
   PROCESSED_PROPERTY_IDS = [72, 73, 74, 76, 104, 229, 230, 231, 501, 502, 505]
+  SECTIONS               = { turkish: 57, ukraine: 184, india: 192 }
+  MODELS                 = { turkish: OpenPs, ukraine: PsUkraine, india: PsIndia }
+  COUNTRY_CODE           = { turkish: 'tr', ukraine: 'ua', india: 'in' }
 
   def perform(**args)
     run_id      = args[:run_id]
     limit       = args[:limit]
     offset      = args[:offset]
     country     = args[:country]
-    section_id  = { turkish: 57, ukraine: 184, india: 192 }[country]
-    module_name = { turkish: OpenPs, ukraine: PsUkraine, india: PsIndia }[country]
+    section_id  = SECTIONS[country]
+    module_name = MODELS[country]
     all_games   = module_name::Content.content_with_products(limit, offset)
     saved = updated = restored = upd_menuidx = 0
     all_games.each do |game|
@@ -73,8 +76,7 @@ class Projects::Project001::ImportJob < ApplicationJob
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
         data[:other_params] = other_params
-        country_code        = { turkish: 'tr', ukraine: 'ua', india: 'in' }[country]
-        data[:category]     = "games-#{country_code}/"
+        data[:category]     = "games-#{COUNTRY_CODE[country]}/"
         Project001::BIblockElement.save_product(data)
         saved += 1
       end
@@ -111,7 +113,7 @@ class Projects::Project001::ImportJob < ApplicationJob
     publisher = game['product']['publisher'].present? ? game['product']['publisher'] : 'Неизвестный'
 
     result = [
-      { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'].gsub(/, PS Vita|, PS3/, ''), VALUE_NUM: 0 },
+      { IBLOCK_PROPERTY_ID: 229, VALUE: game['product']['platform'], VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 231, VALUE: gen_lang_info(game['product']), VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 104, VALUE: game['product']['type_game'] || 'Игра', VALUE_NUM: 0 },
       { IBLOCK_PROPERTY_ID: 72, VALUE: price, VALUE_ENUM: price, VALUE_NUM: price },
@@ -180,6 +182,6 @@ class Projects::Project001::ImportJob < ApplicationJob
 
   def generate_addition_data(data, md5_hash, run_id, country)
     { sony_id: data['product']['janr'], data_source_url: data['product']['data_source_url'], country: country,
-      md5_hash: md5_hash, run_id: run_id, touched_run_id: run_id } # old version data['product']['md5_hash']
+      md5_hash: md5_hash, run_id: run_id, touched_run_id: run_id } # TODO old version data['product']['md5_hash']
   end
 end
