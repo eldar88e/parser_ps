@@ -68,12 +68,20 @@ class Projects::Project001::ImportJob < ApplicationJob
         data             = generate_main_data(game, section_id, country)
         existing_element = Project001::BIblockElement.find_by(XML_ID: data[:XML_ID])
         if existing_element
-          msg = "XML_ID #{data[:XML_ID]} is exist in the database!"
-          TelegramService.call(msg)
-          binding.pry
-          next
-          # existing_element.destroy if existing_element[:ACTIVE] == 'N'
+          msg = "XML_ID: #{data[:XML_ID]}\nNAME: #{data[:NAME]}\nis exist in the database"
+          if existing_element[:ACTIVE] == 'N'
+            existing_element.destroy
+            msg << ' and unpublish, therefore removed!'
+            Rails.log.error(msg)
+            TelegramService.call(msg)
+          else
+            msg << ', was not removed!'
+            Rails.log.error(msg)
+            TelegramService.call(msg)
+            next
+          end
         end
+
         data[:prices]       = prices
         data[:addition]     = generate_addition_data(game, md5_hash, run_id, country)
         data[:other_params] = other_params
