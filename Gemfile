@@ -22,10 +22,10 @@ gem 'mysql2'
 gem 'net-ftp'
 gem 'mini_magick'
 gem 'telegram-bot-ruby'
-gem 'pry'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
+  gem 'pry'
 end
 
 group :development do
