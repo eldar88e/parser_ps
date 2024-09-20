@@ -50,8 +50,10 @@ class Projects::Project001::ImportJob < ApplicationJob
         properties_to_delete.destroy_all
 
         existing_prices = element.b_catalog_prices
+
         prices.each do |price|
-          existing_prices.find_or_initialize_by(CATALOG_GROUP_ID: price[:CATALOG_GROUP_ID]).update!(price)
+          existing_price = existing_prices.find_or_initialize_by(CATALOG_GROUP_ID: price[:CATALOG_GROUP_ID])
+          existing_price.update(price) if existing_price[:PRICE] != price[:PRICE]
         end
         if prices.size < existing_prices.size
           existing_prices.where.not(CATALOG_GROUP_ID: prices.first[:CATALOG_GROUP_ID]).delete_all
@@ -104,7 +106,7 @@ class Projects::Project001::ImportJob < ApplicationJob
   end
 
   def generate_other_params(game, price, old_price)
-    old_price ||= price
+    old_price = old_price.to_i > 0 ? old_price : price
     publisher = game['product']['publisher'].present? ? game['product']['publisher'] : 'Неизвестный'
 
     result = [
@@ -170,7 +172,7 @@ class Projects::Project001::ImportJob < ApplicationJob
       PRICE_SCALE: price }
     ]
     result << { CATALOG_GROUP_ID: GROUP_OLD_PRICE, PRICE: old_price, CURRENCY: CURRENCY, TIMESTAMP_X: Time.current,
-                PRICE_SCALE: old_price } if old_price.present?
+                PRICE_SCALE: old_price } if old_price.to_i > 0
 
     result
   end
